@@ -13,17 +13,33 @@ surveys <- read.csv('data/portal_data_joined.csv')
 
 #### time, species, sex, hindfoot, weight, taxa, plot type/plot ID
 
-## explore sex vs hindfood length within smaller species
+## explore weight vs hindfood length within smaller species
 
 # data parsing
 
-surveys_sml <- surveys %>%
-  filter(weight < 5) %>%
-  select(species_id, sex, hindfoot_length)
- 
-# build figure
+month_weight <- surveys%>%
+  group_by(month) %>%
+  summarize(mean_weight = mean(weight, na.rm = TRUE))
+
+rodent_weight <- surveys %>%
+  filter(taxa == "Rodent") %>%
+  select(genus, weight)
+
+year_weight <- surveys %>%
+  group_by(year, plot_type) %>%
+  summarize(mean_weight = mean(weight, na.rm = TRUE))
+
+# build figures
 library(ggplot2)
-ggplot(data = surveys, aes(x=hindfoot_length, y=sex)) + geom_point()
+
+# figure1 - relationship between month of the year and mean weight
+ggplot(data = month_weight, aes(x=month, y=mean_weight)) + geom_point() + xlab("Month") + ylab("Mean weight (g)") + ggtitle("Figure 1 - Relationship between month and weight")
+
+# figure2 - distribution of weights amongst rodents 
+ggplot(data = rodent_weight, aes(x=genus, y=weight)) + geom_boxplot() + xlab("Genus") + ylab("Weight (g)") + ggtitle("Figure 2 - Distribution of weights by genus")
+
+# figure3 - comparison of weights amongst taxa over time
+ggplot(data = year_weight, aes (x=year, y=weight)) + geom_line()
 
 ## look at composition of data in sampling
 
