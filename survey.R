@@ -13,7 +13,7 @@ surveys <- read.csv('data/portal_data_joined.csv')
 
 #### time, species, sex, hindfoot, weight, taxa, plot type/plot ID
 
-# build figures
+### build figures
 library(ggplot2)
 
 ## relationship between month of the year and mean weight
@@ -43,3 +43,15 @@ year_weight <- surveys %>%
 # figure 3
 ggplot(data = year_weight, aes (x=year, y=mean_weight, by=plot_type)) + geom_line(aes(color=plot_type)) + xlab("Year") + ylab("Mean weight (g)") + ggtitle("Figure 3 - Comparison of weights by year")
 
+### statistical test - ANOVA
+## determine if there is a difference in weight between males and females
+# data parsing
+
+m_fdata <- surveys %>%  #remove every sex except male and female
+  filter(!sex=="P")%>%
+  filter(!sex=="R")%>%
+  filter(!sex=="Z")%>%
+  filter(!sex=="")
+
+fit <- aov(weight ~ sex, data = m_fdata) # ANOVA test
+summary(fit) # summarize results
